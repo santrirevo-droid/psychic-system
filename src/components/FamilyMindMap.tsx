@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { computeTreeLayout, type TreeMember } from "@/lib/tree-layout";
 import { photoSrc } from "@/lib/photo";
 
@@ -59,13 +59,23 @@ export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
   const width = (maxX - minX) * COL_W + NODE_W + PADDING * 2;
   const height = (maxY - minY) * ROW_H + NODE_H + PADDING * 2;
 
-  useEffect(() => {
+  const viewerId = members.find((m) => m.isViewer)?.id;
+
+  function focusOnViewer(behavior: ScrollBehavior = "smooth") {
     const container = scrollRef.current;
-    const viewer = members.find((m) => m.isViewer);
-    const pos = viewer && positions.get(viewer.id);
+    const pos = viewerId && positions.get(viewerId);
     if (!container || !pos) return;
-    container.scrollLeft = px(pos.x) - container.clientWidth / 2;
-    container.scrollTop = py(pos.y) - container.clientHeight / 2;
+    container.scrollTo({
+      left: px(pos.x) - container.clientWidth / 2,
+      top: py(pos.y) - container.clientHeight / 2,
+      behavior,
+    });
+  }
+
+  // Center on the logged-in viewer as soon as the diagram mounts (before
+  // paint, via useLayoutEffect, so there's no visible jump from top-left).
+  useLayoutEffect(() => {
+    focusOnViewer("instant");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -114,7 +124,7 @@ export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 sm:flex-row">
+      <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-3 sm:flex-row">
         <input
           type="search"
           value={query}
@@ -122,6 +132,12 @@ export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
           placeholder="Cari & sorot nama atau kota..."
           className="w-full rounded-full border border-card-border bg-card px-5 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
+        <button
+          onClick={() => focusOnViewer()}
+          className="shrink-0 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium whitespace-nowrap hover:border-primary hover:text-primary"
+        >
+          Fokus ke Saya
+        </button>
         <div className="flex shrink-0 items-center gap-1 rounded-full border border-card-border bg-card p-1">
           <button
             onClick={() => setScale((s) => Math.max(0.5, +(s - 0.15).toFixed(2)))}
