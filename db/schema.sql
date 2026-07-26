@@ -12,13 +12,9 @@ create table if not exists members (
   parent_id uuid references members(id) on delete set null,
   spouse_id uuid references members(id) on delete set null,
   pin_hash text,
+  is_admin boolean not null default false,
   created_at timestamptz not null default now()
 );
 
 create index if not exists members_parent_id_idx on members(parent_id);
 create index if not exists members_generation_idx on members(generation);
-
--- Only the server (using the service role key) talks to this table, so keep
--- RLS on with no policies: anon/authenticated roles get zero access by default,
--- while the service role bypasses RLS entirely.
-alter table members enable row level security;

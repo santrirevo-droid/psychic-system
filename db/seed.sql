@@ -30,3 +30,6 @@ values
   -- Generasi 5: Anak & keponakan
   ('55555555-5555-5555-5555-555555555551', 'Kirana Andi', 'P', 2024, 'Jakarta', 'https://api.dicebear.com/9.x/personas/svg?seed=Kirana', 5, '44444444-4444-4444-4444-444444444441', null, null),
   ('55555555-5555-5555-5555-555555555552', 'Bima Sari', 'L', 2022, 'Jakarta', 'https://api.dicebear.com/9.x/personas/svg?seed=Bima', 5, '44444444-4444-4444-4444-444444444442', null, null);
+
+-- Andi Budi is the demo admin so the /admin dashboard can be tried immediately with PIN 1234.
+update members set is_admin = true where id = '44444444-4444-4444-4444-444444444441';

@@ -30,7 +30,20 @@ export type Member = {
   parent_id: string | null;
   spouse_id: string | null;
   pin_hash: string | null;
+  is_admin: boolean;
   created_at: string;
+};
+
+export type MemberInput = {
+  name: string;
+  gender: Gender;
+  birth_year: number | null;
+  city: string | null;
+  photo_url: string | null;
+  generation: number;
+  parent_id: string | null;
+  spouse_id: string | null;
+  is_admin: boolean;
 };
 
 export async function getAllMembers(): Promise<Member[]> {
@@ -46,4 +59,40 @@ export async function getMemberById(id: string): Promise<Member | null> {
     select * from members where id = ${id} limit 1
   `;
   return (rows[0] as Member | undefined) ?? null;
+}
+
+export async function createMember(input: MemberInput): Promise<Member> {
+  const rows = await getSql()`
+    insert into members (name, gender, birth_year, city, photo_url, generation, parent_id, spouse_id, is_admin)
+    values (${input.name}, ${input.gender}, ${input.birth_year}, ${input.city}, ${input.photo_url}, ${input.generation}, ${input.parent_id}, ${input.spouse_id}, ${input.is_admin})
+    returning *
+  `;
+  return rows[0] as Member;
+}
+
+export async function updateMember(id: string, input: MemberInput): Promise<Member | null> {
+  const rows = await getSql()`
+    update members set
+      name = ${input.name},
+      gender = ${input.gender},
+      birth_year = ${input.birth_year},
+      city = ${input.city},
+      photo_url = ${input.photo_url},
+      generation = ${input.generation},
+      parent_id = ${input.parent_id},
+      spouse_id = ${input.spouse_id},
+      is_admin = ${input.is_admin}
+    where id = ${id}
+    returning *
+  `;
+  return (rows[0] as Member | undefined) ?? null;
+}
+
+/** Separate from updateMember so a blank "new PIN" field in the admin form can leave the existing PIN untouched. */
+export async function setMemberPin(id: string, pinHash: string | null): Promise<void> {
+  await getSql()`update members set pin_hash = ${pinHash} where id = ${id}`;
+}
+
+export async function deleteMember(id: string): Promise<void> {
+  await getSql()`delete from members where id = ${id}`;
 }

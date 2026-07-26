@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getAllMembers } from "@/lib/db";
 import { getSessionMemberId } from "@/lib/auth";
 import { GENERATION_LABELS, getRelationTerm, groupByGeneration } from "@/lib/relationship";
@@ -44,7 +45,17 @@ export default async function Home() {
             Berikut keluarga besar Anda, lengkap dengan panggilannya.
           </p>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-3">
+          {viewer.is_admin && (
+            <Link
+              href="/admin"
+              className="rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary"
+            >
+              Kelola Data
+            </Link>
+          )}
+          <LogoutButton />
+        </div>
       </header>
 
       <FamilyTree groups={groups} />
