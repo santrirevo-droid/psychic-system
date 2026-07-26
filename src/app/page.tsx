@@ -7,6 +7,7 @@ import type { GenerationGroup } from "@/components/FamilyTree";
 import type { TreeMember } from "@/lib/tree-layout";
 import FamilyView from "@/components/FamilyView";
 import LogoutButton from "@/components/LogoutButton";
+import SelfPhotoUpload from "@/components/SelfPhotoUpload";
 
 export default async function Home() {
   const viewerId = await getSessionMemberId();
@@ -52,16 +53,19 @@ export default async function Home() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
       <header className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-        <div>
-          <p className="text-sm font-medium tracking-widest text-accent uppercase">
-            Pohon Keluarga
-          </p>
-          <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-semibold sm:text-4xl">
-            Halo, {viewer.name}
-          </h1>
-          <p className="mt-2 text-muted">
-            Berikut keluarga besar Anda, lengkap dengan panggilannya.
-          </p>
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
+          <SelfPhotoUpload name={viewer.name} photoUrl={viewer.photo_url} />
+          <div>
+            <p className="text-sm font-medium tracking-widest text-accent uppercase">
+              Pohon Keluarga
+            </p>
+            <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-semibold sm:text-4xl">
+              Halo, {viewer.name}
+            </h1>
+            <p className="mt-2 text-muted">
+              Berikut keluarga besar Anda, lengkap dengan panggilannya.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {viewer.is_admin && (

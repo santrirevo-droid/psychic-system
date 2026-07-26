@@ -96,6 +96,14 @@ export async function setMemberPin(id: string, pinHash: string | null): Promise<
   await getSql()`update members set pin_hash = ${pinHash} where id = ${id}`;
 }
 
+/** Separate from updateMember so a logged-in member can update just their own photo without admin rights. */
+export async function updateMemberPhoto(id: string, photoUrl: string): Promise<Member | null> {
+  const rows = await getSql()`
+    update members set photo_url = ${photoUrl} where id = ${id} returning *
+  `;
+  return (rows[0] as Member | undefined) ?? null;
+}
+
 export async function deleteMember(id: string): Promise<void> {
   await getSql()`delete from members where id = ${id}`;
 }
