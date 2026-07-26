@@ -20,60 +20,48 @@ export type RelationTerm =
   | "Tante"
   | "Keponakan";
 
-function parentOf(id: string, byId: Map<string, Member>): string | null {
-  return byId.get(id)?.parent_id ?? null;
-}
-
-function ancestorChain(id: string, byId: Map<string, Member>): string[] {
-  const chain: string[] = [];
+/**
+ * Each link is {person, person's spouse} rather than a single id, so a
+ * couple is treated as equivalent at every generation - not just when one
+ * side happens to have no parent_id of their own. This is what lets a child
+ * recorded under one parent's parent_id still resolve correctly against the
+ * *other* parent (who may have their own, unrelated blood ancestry).
+ */
+function ancestorChainSets(id: string, byId: Map<string, Member>): Set<string>[] {
+  const chain: Set<string>[] = [];
   let current: string | null = id;
   const seen = new Set<string>();
   while (current && !seen.has(current)) {
-    chain.push(current);
     seen.add(current);
-    current = parentOf(current, byId);
+    const person = byId.get(current);
+    if (!person) break;
+    const node = new Set<string>([current]);
+    if (person.spouse_id) node.add(person.spouse_id);
+    chain.push(node);
+
+    // Prefer this person's own blood line; if they have none recorded (e.g.
+    // married in with no parent_id of their own), keep climbing through
+    // their spouse's blood line instead of dead-ending the chain here.
+    const spouse = person.spouse_id ? byId.get(person.spouse_id) : undefined;
+    current = person.parent_id ?? spouse?.parent_id ?? null;
   }
   return chain;
 }
 
-/** Steps up from `fromId` and down to `toId` via their closest common ancestor. */
+/** Steps up from `fromId` and down to `toId` via their closest common ancestor (or ancestor couple). */
 function findUpDown(
   fromId: string,
   toId: string,
   byId: Map<string, Member>
 ): { up: number; down: number } | null {
-  const vChain = ancestorChain(fromId, byId);
-  const tChain = ancestorChain(toId, byId);
+  const vChain = ancestorChainSets(fromId, byId);
+  const tChain = ancestorChainSets(toId, byId);
   for (let up = 0; up < vChain.length; up++) {
-    const down = tChain.indexOf(vChain[up]);
-    if (down !== -1) return { up, down };
-  }
-  return null;
-}
-
-/**
- * Members who married into the family have no parent_id of their own, so a
- * direct ancestor-chain lookup never finds them. As a fallback, retry the
- * lookup through their spouse's blood line (single hop only).
- */
-function findUpDownWithInLaws(
-  viewer: Member,
-  target: Member,
-  byId: Map<string, Member>
-) {
-  const targetAlt = !target.parent_id && target.spouse_id ? target.spouse_id : target.id;
-  const viewerAlt = !viewer.parent_id && viewer.spouse_id ? viewer.spouse_id : viewer.id;
-
-  const candidates: [string, string][] = [
-    [viewer.id, target.id],
-    [viewer.id, targetAlt],
-    [viewerAlt, target.id],
-    [viewerAlt, targetAlt],
-  ];
-
-  for (const [a, b] of candidates) {
-    const result = findUpDown(a, b, byId);
-    if (result) return result;
+    for (let down = 0; down < tChain.length; down++) {
+      for (const id of vChain[up]) {
+        if (tChain[down].has(id)) return { up, down };
+      }
+    }
   }
   return null;
 }
@@ -119,7 +107,7 @@ export function getRelationTerm(
   }
 
   const byId = new Map(allMembers.map((m) => [m.id, m]));
-  const path = findUpDownWithInLaws(viewer, target, byId);
+  const path = findUpDown(viewer.id, target.id, byId);
 
   if (!path) {
     // Disconnected branches (no traceable common ancestor): fall back to a
