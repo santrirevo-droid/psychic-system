@@ -41,6 +41,33 @@
   }
 }
 
+/* Explicit overrides from the theme toggle take precedence over the OS
+   preference above in both directions, since an attribute selector is
+   more specific than a bare :root. */
+:root[data-theme="light"] {
+  --background: #fff6e5;
+  --foreground: #211c16;
+  --card: #ffffff;
+  --card-border: #f0dec0;
+  --muted: #6e6558;
+  --primary: #1e3a5f;
+  --primary-foreground: #ffffff;
+  --accent: #e8650a;
+  --accent-soft: #ffe7c7;
+}
+
+:root[data-theme="dark"] {
+  --background: #17130f;
+  --foreground: #fdf6e9;
+  --card: #241e17;
+  --card-border: #3a2f22;
+  --muted: #c9bfae;
+  --primary: #8fbdec;
+  --primary-foreground: #12233a;
+  --accent: #ffa53d;
+  --accent-soft: #3a2810;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
