@@ -59,33 +59,35 @@ export default function SelfPhotoUpload({
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        disabled={uploading}
-        title="Ubah foto wajah"
-        className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-card-border bg-accent-soft shadow-inner disabled:opacity-70"
-      >
-        {src ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={name} className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center font-[family-name:var(--font-display)] text-lg text-accent">
-            {initials(name)}
-          </div>
-        )}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/0 text-transparent transition group-hover:bg-black/40 group-hover:text-white">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
-            <circle cx="12" cy="13" r="3.5" />
-          </svg>
+      <div className="relative h-16 w-16 shrink-0">
+        <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-card-border bg-accent-soft shadow-inner">
+          {src ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} alt={name} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center font-[family-name:var(--font-display)] text-lg text-accent">
+              {initials(name)}
+            </div>
+          )}
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-[10px] font-medium text-white">
+              ...
+            </div>
+          )}
         </div>
-        {uploading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-[10px] font-medium text-white">
-            ...
-          </div>
-        )}
-      </button>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          title="Ubah foto wajah"
+          aria-label="Ubah foto wajah"
+          className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow transition hover:opacity-90 disabled:opacity-50"
+        >
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13.5 4.5l4 4L7 19H3v-4L13.5 4.5Z" />
+          </svg>
+        </button>
+      </div>
       <input
         ref={inputRef}
         type="file"
