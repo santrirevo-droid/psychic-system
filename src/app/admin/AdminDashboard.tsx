@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Member } from "@/lib/db";
+import { photoSrc } from "@/lib/photo";
 import MemberForm from "./MemberForm";
 
 const GEN_LABEL: Record<number, string> = {
@@ -103,7 +104,7 @@ export default function AdminDashboard({ initialMembers }: { initialMembers: Mem
                         <div className="h-10 w-10 overflow-hidden rounded-full bg-accent-soft">
                           {m.photo_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={m.photo_url} alt="" className="h-full w-full object-cover" />
+                            <img src={photoSrc(m.photo_url)} alt="" className="h-full w-full object-cover" />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-xs font-medium text-accent">
                               {initials(m.name)}

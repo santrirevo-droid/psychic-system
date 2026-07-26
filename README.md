@@ -30,6 +30,8 @@ mengedit, menghapus anggota, dan mengunggah foto langsung dari browser (tanpa SQ
 1. Masih di tab **Storage** project Vercel → **Create Database** → pilih **Blob**, lalu hubungkan ke project ini. Vercel otomatis menambahkan `BLOB_READ_WRITE_TOKEN`.
 2. Untuk dev lokal, tambahkan `BLOB_READ_WRITE_TOKEN` yang sama ke `.env.local` (lihat tab Storage → `.env-vars`, atau jalankan `vercel env pull`).
 
+Store Blob boleh dibuat dengan access **public** maupun **private** — keduanya didukung. Foto selalu ditampilkan lewat `/api/photo` (lihat [`src/app/api/photo/route.ts`](src/app/api/photo/route.ts)), yang mengharuskan viewer login sebelum bisa melihat foto apa pun, jadi foto keluarga tidak pernah punya URL yang bisa diakses publik begitu saja.
+
 ## 3. Menjalankan secara lokal
 
 ```bash

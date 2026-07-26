@@ -23,8 +23,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Ukuran foto maksimal 5MB." }, { status: 400 });
   }
 
+  // The connected Blob store is private-access, so blobs aren't reachable by
+  // a bare URL — /api/photo proxies reads for any logged-in family member.
   const blob = await put(`family-photos/${crypto.randomUUID()}-${file.name}`, file, {
-    access: "public",
+    access: "private",
   });
 
   return NextResponse.json({ ok: true, url: blob.url });

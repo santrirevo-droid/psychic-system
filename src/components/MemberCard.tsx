@@ -1,4 +1,5 @@
 import type { RelationTerm } from "@/lib/relationship";
+import { photoSrc } from "@/lib/photo";
 
 export type MemberCardData = {
   id: string;
@@ -40,7 +41,7 @@ export default function MemberCard({ data }: { data: MemberCardData }) {
         {photo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={photo_url}
+            src={photoSrc(photo_url)}
             alt={name}
             className="h-full w-full object-cover"
           />

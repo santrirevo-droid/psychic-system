@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Member } from "@/lib/db";
+import { photoSrc } from "@/lib/photo";
 
 type MemberFormProps = {
   member: Member | null;
@@ -32,7 +33,7 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
 
   const [photoUrl, setPhotoUrl] = useState(member?.photo_url ?? "");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState(member?.photo_url ?? "");
+  const [photoPreview, setPhotoPreview] = useState(photoSrc(member?.photo_url ?? null) ?? "");
 
   const [changePin, setChangePin] = useState(!isEdit);
   const [pin, setPin] = useState("");
