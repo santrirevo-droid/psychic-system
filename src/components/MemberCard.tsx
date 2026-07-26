@@ -1,10 +1,12 @@
 import type { RelationTerm } from "@/lib/relationship";
 import { photoSrc } from "@/lib/photo";
+import { formatBirth } from "@/lib/months";
 
 export type MemberCardData = {
   id: string;
   name: string;
   birth_year: number | null;
+  birth_month: number | null;
   city: string | null;
   photo_url: string | null;
   term: RelationTerm;
@@ -21,7 +23,8 @@ function initials(name: string) {
 }
 
 export default function MemberCard({ data }: { data: MemberCardData }) {
-  const { name, birth_year, city, photo_url, term, isViewer } = data;
+  const { name, birth_year, birth_month, city, photo_url, term, isViewer } = data;
+  const birth = formatBirth(birth_year, birth_month);
 
   return (
     <div
@@ -60,7 +63,7 @@ export default function MemberCard({ data }: { data: MemberCardData }) {
       </h3>
 
       <div className="mt-2 flex flex-col gap-0.5 text-sm text-muted">
-        {birth_year && <span>Lahir {birth_year}</span>}
+        {birth && <span>Lahir {birth}</span>}
         {city && <span>{city}</span>}
       </div>
     </div>

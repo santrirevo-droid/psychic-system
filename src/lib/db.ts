@@ -24,6 +24,7 @@ export type Member = {
   name: string;
   gender: Gender;
   birth_year: number | null;
+  birth_month: number | null;
   city: string | null;
   photo_url: string | null;
   generation: number;
@@ -38,6 +39,7 @@ export type MemberInput = {
   name: string;
   gender: Gender;
   birth_year: number | null;
+  birth_month: number | null;
   city: string | null;
   photo_url: string | null;
   generation: number;
@@ -49,7 +51,7 @@ export type MemberInput = {
 export async function getAllMembers(): Promise<Member[]> {
   const rows = await getSql()`
     select * from members
-    order by generation asc, birth_year asc
+    order by generation asc, birth_year asc, birth_month asc
   `;
   return rows as Member[];
 }
@@ -63,8 +65,8 @@ export async function getMemberById(id: string): Promise<Member | null> {
 
 export async function createMember(input: MemberInput): Promise<Member> {
   const rows = await getSql()`
-    insert into members (name, gender, birth_year, city, photo_url, generation, parent_id, spouse_id, is_admin)
-    values (${input.name}, ${input.gender}, ${input.birth_year}, ${input.city}, ${input.photo_url}, ${input.generation}, ${input.parent_id}, ${input.spouse_id}, ${input.is_admin})
+    insert into members (name, gender, birth_year, birth_month, city, photo_url, generation, parent_id, spouse_id, is_admin)
+    values (${input.name}, ${input.gender}, ${input.birth_year}, ${input.birth_month}, ${input.city}, ${input.photo_url}, ${input.generation}, ${input.parent_id}, ${input.spouse_id}, ${input.is_admin})
     returning *
   `;
   return rows[0] as Member;
@@ -76,6 +78,7 @@ export async function updateMember(id: string, input: MemberInput): Promise<Memb
       name = ${input.name},
       gender = ${input.gender},
       birth_year = ${input.birth_year},
+      birth_month = ${input.birth_month},
       city = ${input.city},
       photo_url = ${input.photo_url},
       generation = ${input.generation},

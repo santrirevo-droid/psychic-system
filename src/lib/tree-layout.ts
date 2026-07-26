@@ -5,6 +5,7 @@ export type TreeMember = {
   name: string;
   gender: "L" | "P";
   birth_year: number | null;
+  birth_month: number | null;
   city: string | null;
   photo_url: string | null;
   generation: number;
@@ -32,7 +33,11 @@ export function computeTreeLayout(members: TreeMember[]): Map<string, Position> 
     childrenOf.set(m.parent_id, list);
   }
   for (const list of childrenOf.values()) {
-    list.sort((a, b) => (a.birth_year ?? 9999) - (b.birth_year ?? 9999));
+    list.sort((a, b) => {
+      const yearDiff = (a.birth_year ?? 9999) - (b.birth_year ?? 9999);
+      if (yearDiff !== 0) return yearDiff;
+      return (a.birth_month ?? 13) - (b.birth_month ?? 13);
+    });
   }
 
   const positions = new Map<string, Position>();

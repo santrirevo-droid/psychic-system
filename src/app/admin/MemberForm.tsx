@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Member } from "@/lib/db";
 import { photoSrc } from "@/lib/photo";
+import { MONTH_LABELS } from "@/lib/months";
 
 type MemberFormProps = {
   member: Member | null;
@@ -25,6 +26,7 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
   const [name, setName] = useState(member?.name ?? "");
   const [gender, setGender] = useState<"L" | "P">(member?.gender ?? "L");
   const [birthYear, setBirthYear] = useState(member?.birth_year?.toString() ?? "");
+  const [birthMonth, setBirthMonth] = useState(member?.birth_month?.toString() ?? "");
   const [city, setCity] = useState(member?.city ?? "");
   const [generation, setGeneration] = useState(member?.generation ?? 1);
   const [parentId, setParentId] = useState(member?.parent_id ?? "");
@@ -77,6 +79,7 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
         name,
         gender,
         birth_year: birthYear ? Number(birthYear) : null,
+        birth_month: birthMonth ? Number(birthMonth) : null,
         city: city || null,
         photo_url: finalPhotoUrl || null,
         generation,
@@ -179,6 +182,22 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
             onChange={(e) => setBirthYear(e.target.value)}
             className="rounded-lg border border-card-border bg-card px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-muted">Bulan Lahir</label>
+          <select
+            value={birthMonth}
+            onChange={(e) => setBirthMonth(e.target.value)}
+            className="rounded-lg border border-card-border bg-card px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="">Tidak diketahui</option>
+            {Object.entries(MONTH_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="flex flex-col gap-1">

@@ -6,6 +6,7 @@ create table if not exists members (
   name text not null,
   gender text not null check (gender in ('L', 'P')),
   birth_year int,
+  birth_month int check (birth_month between 1 and 12),
   city text,
   photo_url text,
   generation int not null check (generation between 1 and 5),

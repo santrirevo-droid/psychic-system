@@ -10,10 +10,16 @@ export function parseMemberInput(body: unknown): MemberInput | null {
   const generation = Number(b.generation);
   if (!Number.isInteger(generation) || generation < 1 || generation > 5) return null;
 
+  const birthMonth = b.birth_month ? Number(b.birth_month) : null;
+  if (birthMonth !== null && (!Number.isInteger(birthMonth) || birthMonth < 1 || birthMonth > 12)) {
+    return null;
+  }
+
   return {
     name: b.name.trim(),
     gender: b.gender,
     birth_year: b.birth_year ? Number(b.birth_year) : null,
+    birth_month: birthMonth,
     city: typeof b.city === "string" && b.city.trim() ? b.city.trim() : null,
     photo_url: typeof b.photo_url === "string" && b.photo_url.trim() ? b.photo_url.trim() : null,
     generation,

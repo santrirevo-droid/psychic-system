@@ -3,6 +3,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { computeTreeLayout, type TreeMember } from "@/lib/tree-layout";
 import { photoSrc } from "@/lib/photo";
+import { formatBirth } from "@/lib/months";
 
 const COL_W = 176;
 const ROW_H = 190;
@@ -211,8 +212,10 @@ export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
                     <span className="line-clamp-1 w-full text-xs font-semibold leading-tight">
                       {m.name}
                     </span>
-                    {m.birth_year && (
-                      <span className="text-[10px] text-muted">{m.birth_year}</span>
+                    {formatBirth(m.birth_year, m.birth_month) && (
+                      <span className="text-[10px] text-muted">
+                        {formatBirth(m.birth_year, m.birth_month)}
+                      </span>
                     )}
                   </div>
                 </foreignObject>

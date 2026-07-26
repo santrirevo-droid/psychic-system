@@ -136,8 +136,11 @@ export function getRelationTerm(
   let term = termForPath(path.up, path.down, target);
 
   if (term === "Kakak/Adik" && viewer.birth_year && target.birth_year) {
-    if (target.birth_year < viewer.birth_year) term = "Kakak";
-    else if (target.birth_year > viewer.birth_year) term = "Adik";
+    if (target.birth_year !== viewer.birth_year) {
+      term = target.birth_year < viewer.birth_year ? "Kakak" : "Adik";
+    } else if (viewer.birth_month && target.birth_month && viewer.birth_month !== target.birth_month) {
+      term = target.birth_month < viewer.birth_month ? "Kakak" : "Adik";
+    }
   }
 
   return term;

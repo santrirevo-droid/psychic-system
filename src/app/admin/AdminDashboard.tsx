@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Member } from "@/lib/db";
 import { photoSrc } from "@/lib/photo";
+import { formatBirth } from "@/lib/months";
 import MemberForm from "./MemberForm";
 
 const GEN_LABEL: Record<number, string> = {
@@ -98,7 +99,9 @@ export default function AdminDashboard({ initialMembers }: { initialMembers: Mem
             <div className="overflow-hidden rounded-xl border border-card-border bg-card">
               <table className="w-full text-left text-sm">
                 <tbody>
-                  {list.map((m) => (
+                  {list.map((m) => {
+                    const birth = formatBirth(m.birth_year, m.birth_month);
+                    return (
                     <tr key={m.id} className="border-b border-card-border last:border-0">
                       <td className="w-14 p-3">
                         <div className="h-10 w-10 overflow-hidden rounded-full bg-accent-soft">
@@ -122,8 +125,8 @@ export default function AdminDashboard({ initialMembers }: { initialMembers: Mem
                           )}
                         </div>
                         <div className="text-xs text-muted">
-                          {m.birth_year ? `Lahir ${m.birth_year}` : null}
-                          {m.birth_year && m.city ? " · " : null}
+                          {birth ? `Lahir ${birth}` : null}
+                          {birth && m.city ? " · " : null}
                           {m.city}
                         </div>
                       </td>
@@ -153,7 +156,8 @@ export default function AdminDashboard({ initialMembers }: { initialMembers: Mem
                         </button>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
