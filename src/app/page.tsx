@@ -3,7 +3,9 @@ import Link from "next/link";
 import { getAllMembers } from "@/lib/db";
 import { getSessionMemberId } from "@/lib/auth";
 import { GENERATION_LABELS, getRelationTerm, groupByGeneration } from "@/lib/relationship";
-import FamilyTree, { type GenerationGroup } from "@/components/FamilyTree";
+import type { GenerationGroup } from "@/components/FamilyTree";
+import type { TreeMember } from "@/lib/tree-layout";
+import FamilyView from "@/components/FamilyView";
 import LogoutButton from "@/components/LogoutButton";
 
 export default async function Home() {
@@ -30,6 +32,20 @@ export default async function Home() {
       })),
     })
   );
+
+  const treeMembers: TreeMember[] = members.map((m) => ({
+    id: m.id,
+    name: m.name,
+    gender: m.gender,
+    birth_year: m.birth_year,
+    city: m.city,
+    photo_url: m.photo_url,
+    generation: m.generation,
+    parent_id: m.parent_id,
+    spouse_id: m.spouse_id,
+    term: getRelationTerm(viewer, m, members),
+    isViewer: m.id === viewer.id,
+  }));
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
@@ -58,7 +74,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <FamilyTree groups={groups} />
+      <FamilyView groups={groups} members={treeMembers} />
     </main>
   );
 }
