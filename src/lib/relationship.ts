@@ -187,6 +187,35 @@ export function getFamilyCircle<T extends FamilyLike>(member: T, allMembers: T[]
   return { parents, siblings, spouse, children };
 }
 
+/**
+ * Mahram: relatives a Muslim may never marry, per Islamic family law. This is
+ * blood/nasab and sepersusuan kin only - a spouse is explicitly excluded
+ * (marriage to your own spouse is the opposite of forbidden), and so is
+ * "Ipar" (a sibling's spouse, or a spouse's sibling), since in-laws of that
+ * kind are famously *not* mahram. Cousins ("Sepupu") are likewise excluded,
+ * as cousin marriage is permitted in Islam.
+ */
+const MAHRAM_TERMS: ReadonlySet<RelationTerm> = new Set([
+  "Ayah",
+  "Ibu",
+  "Kakek",
+  "Nenek",
+  "Buyut",
+  "Anak",
+  "Cucu",
+  "Cicit",
+  "Kakak",
+  "Adik",
+  "Kakak/Adik",
+  "Om",
+  "Tante",
+  "Keponakan",
+]);
+
+export function isMahram(term: RelationTerm): boolean {
+  return MAHRAM_TERMS.has(term);
+}
+
 export const GENERATION_LABELS: Record<number, string> = {
   1: "Generasi 1 · Buyut",
   2: "Generasi 2 · Kakek & Nenek",
