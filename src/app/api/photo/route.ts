@@ -30,6 +30,9 @@ export async function GET(request: Request) {
 
   const upstream = await fetch(targetUrl, { headers });
   if (!upstream.ok || !upstream.body) {
+    console.error(
+      `[DEBUG /api/photo] upstream=${upstream.status} hasToken=${!!headers.Authorization} host=${targetUrl.hostname} body=${await upstream.text().catch(() => "<unreadable>")}`
+    );
     return NextResponse.json({ error: "Foto tidak ditemukan." }, { status: 404 });
   }
 
