@@ -16,6 +16,7 @@ export type RelationTerm =
   | "Adik"
   | "Kakak/Adik"
   | "Sepupu"
+  | "Sepupu Duakali"
   | "Om"
   | "Tante"
   | "Keponakan"
@@ -84,7 +85,10 @@ function termForPath(up: number, down: number, target: Member): RelationTerm {
 
   if (up === down) {
     if (up === 1) return "Kakak/Adik";
-    return "Sepupu";
+    // Same-degree cousins: the shared ancestor is a grandparent for "Sepupu"
+    // (up/down === 2), a great-grandparent - a Buyut, in this family's data -
+    // for "Sepupu Duakali" (up/down === 3 or deeper).
+    return up === 2 ? "Sepupu" : "Sepupu Duakali";
   }
 
   if (up > down) {
