@@ -2,8 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getAllMembers } from "@/lib/db";
 import { getSessionMemberId } from "@/lib/auth";
-import { GENERATION_LABELS, getRelationTerm, groupByGeneration } from "@/lib/relationship";
-import type { GenerationGroup } from "@/components/FamilyTree";
+import { getRelationTerm } from "@/lib/relationship";
 import type { TreeMember } from "@/lib/tree-layout";
 import FamilyView from "@/components/FamilyView";
 import LogoutButton from "@/components/LogoutButton";
@@ -22,24 +21,6 @@ export default async function Home() {
   const members = viewer.is_guest
     ? allMembers.filter((m) => !m.is_guest || m.id === viewer.id)
     : allMembers.filter((m) => !m.is_guest);
-
-  const byGeneration = groupByGeneration(members);
-  const groups: GenerationGroup[] = [...byGeneration.entries()].map(
-    ([generation, list]) => ({
-      generation,
-      label: GENERATION_LABELS[generation] ?? `Generasi ${generation}`,
-      members: list.map((m) => ({
-        id: m.id,
-        name: m.name,
-        birth_year: m.birth_year,
-        birth_month: m.birth_month,
-        city: m.city,
-        photo_url: m.photo_url,
-        term: getRelationTerm(viewer, m, members),
-        isViewer: m.id === viewer.id,
-      })),
-    })
-  );
 
   const treeMembers: TreeMember[] = members.map((m) => ({
     id: m.id,
@@ -96,7 +77,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <FamilyView groups={groups} members={treeMembers} />
+      <FamilyView members={treeMembers} />
     </main>
   );
 }

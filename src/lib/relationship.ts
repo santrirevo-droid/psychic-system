@@ -187,16 +187,6 @@ export function getFamilyCircle<T extends FamilyLike>(member: T, allMembers: T[]
   return { parents, siblings, spouse, children };
 }
 
-export function groupByGeneration(members: Member[]): Map<number, Member[]> {
-  const groups = new Map<number, Member[]>();
-  for (const m of members) {
-    const list = groups.get(m.generation) ?? [];
-    list.push(m);
-    groups.set(m.generation, list);
-  }
-  return new Map([...groups.entries()].sort((a, b) => a[0] - b[0]));
-}
-
 export const GENERATION_LABELS: Record<number, string> = {
   1: "Generasi 1 · Buyut",
   2: "Generasi 2 · Kakek & Nenek",
