@@ -18,7 +18,8 @@ export type RelationTerm =
   | "Sepupu"
   | "Om"
   | "Tante"
-  | "Keponakan";
+  | "Keponakan"
+  | "Ipar";
 
 /**
  * Each link is {person, person's spouse} rather than a single id, so a
@@ -105,6 +106,18 @@ export function getRelationTerm(
   if (viewer.spouse_id === target.id || target.spouse_id === viewer.id) {
     return target.gender === "L" ? "Suami" : "Istri";
   }
+
+  // Ipar: related by marriage rather than blood - either the spouse of one
+  // of viewer's own siblings, or a sibling of viewer's own spouse.
+  const viewerSiblings = getFamilyCircle(viewer, allMembers).siblings;
+  const isSpouseOfSibling = viewerSiblings.some(
+    (s) => s.spouse_id === target.id || target.spouse_id === s.id
+  );
+  const viewerSpouse = viewer.spouse_id ? allMembers.find((m) => m.id === viewer.spouse_id) : undefined;
+  const isSiblingOfSpouse = viewerSpouse
+    ? getFamilyCircle(viewerSpouse, allMembers).siblings.some((s) => s.id === target.id)
+    : false;
+  if (isSpouseOfSibling || isSiblingOfSpouse) return "Ipar";
 
   const byId = new Map(allMembers.map((m) => [m.id, m]));
   const path = findUpDown(viewer.id, target.id, byId);
