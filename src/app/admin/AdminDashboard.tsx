@@ -96,27 +96,24 @@ export default function AdminDashboard({ initialMembers }: { initialMembers: Mem
             <h2 className="mb-3 font-[family-name:var(--font-display)] text-lg font-semibold">
               {GEN_LABEL[gen] ?? `Generasi ${gen}`}
             </h2>
-            <div className="overflow-hidden rounded-xl border border-card-border bg-card">
-              <table className="w-full text-left text-sm">
-                <tbody>
-                  {list.map((m) => {
-                    const birth = formatBirth(m.birth_year, m.birth_month);
-                    return (
-                    <tr key={m.id} className="border-b border-card-border last:border-0">
-                      <td className="w-14 p-3">
-                        <div className="h-10 w-10 overflow-hidden rounded-full bg-accent-soft">
-                          {m.photo_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={photoSrc(m.photo_url)} alt="" className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-xs font-medium text-accent">
-                              {initials(m.name)}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <div className="font-medium">
+            <ul className="divide-y divide-card-border rounded-xl border border-card-border bg-card">
+              {list.map((m) => {
+                const birth = formatBirth(m.birth_year, m.birth_month);
+                return (
+                  <li key={m.id} className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-accent-soft">
+                        {m.photo_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={photoSrc(m.photo_url)} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xs font-medium text-accent">
+                            {initials(m.name)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate font-medium">
                           {m.name}
                           {m.is_admin && (
                             <span className="ml-2 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
@@ -124,43 +121,42 @@ export default function AdminDashboard({ initialMembers }: { initialMembers: Mem
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-muted">
+                        <div className="truncate text-xs text-muted">
                           {birth ? `Lahir ${birth}` : null}
                           {birth && m.city ? " · " : null}
                           {m.city}
                         </div>
-                      </td>
-                      <td className="p-3 text-xs text-muted">
-                        {m.parent_id ? `Anak dari ${byName.get(m.parent_id) ?? "?"}` : "-"}
-                      </td>
-                      <td className="p-3 text-xs">
-                        {m.pin_hash ? (
-                          <span className="text-primary">Bisa login</span>
-                        ) : (
-                          <span className="text-muted">Tanpa login</span>
-                        )}
-                      </td>
-                      <td className="p-3 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => setEditing(m)}
-                          className="rounded-full px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(m)}
-                          disabled={deletingId === m.id}
-                          className="rounded-full px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-950/40"
-                        >
-                          {deletingId === m.id ? "..." : "Hapus"}
-                        </button>
-                      </td>
-                    </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted sm:w-48 sm:shrink-0 sm:flex-col sm:items-end sm:text-right">
+                      <span>{m.parent_id ? `Anak dari ${byName.get(m.parent_id) ?? "?"}` : "-"}</span>
+                      {m.pin_hash ? (
+                        <span className="text-primary">Bisa login</span>
+                      ) : (
+                        <span className="text-muted">Tanpa login</span>
+                      )}
+                    </div>
+
+                    <div className="flex shrink-0 justify-end gap-2">
+                      <button
+                        onClick={() => setEditing(m)}
+                        className="rounded-full px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(m)}
+                        disabled={deletingId === m.id}
+                        className="rounded-full px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-950/40"
+                      >
+                        {deletingId === m.id ? "..." : "Hapus"}
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         ))}
       </div>

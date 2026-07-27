@@ -119,9 +119,14 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
             <img src={photoPreview} alt="" className="h-full w-full object-cover" />
           ) : null}
         </div>
-        <div className="flex flex-1 flex-col gap-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
           <label className="text-sm font-medium text-muted">Foto</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} className="text-sm" />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full max-w-full text-sm"
+          />
           <input
             value={photoFile ? "" : photoUrl}
             onChange={(e) => {
@@ -131,7 +136,7 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
             }}
             placeholder="atau tempel URL foto"
             disabled={!!photoFile}
-            className="rounded-lg border border-card-border bg-card px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+            className="w-full rounded-lg border border-card-border bg-card px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
           />
         </div>
       </div>
