@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Member } from "@/lib/db";
-import { photoSrc } from "@/lib/photo";
+import { photoSrc, MAX_PHOTO_BYTES, MAX_PHOTO_LABEL, safeJson } from "@/lib/photo";
 import { MONTH_LABELS } from "@/lib/months";
 
 type MemberFormProps = {
@@ -54,6 +54,12 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
+    if (file && file.size > MAX_PHOTO_BYTES) {
+      setError(`Ukuran foto maksimal ${MAX_PHOTO_LABEL}.`);
+      e.target.value = "";
+      return;
+    }
+    setError(null);
     setPhotoFile(file);
     if (file) setPhotoPreview(URL.createObjectURL(file));
   }
@@ -70,7 +76,7 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
         const form = new FormData();
         form.set("file", photoFile);
         const uploadRes = await fetch("/api/admin/upload", { method: "POST", body: form });
-        const uploadData = await uploadRes.json();
+        const uploadData = await safeJson(uploadRes);
         if (!uploadRes.ok) throw new Error(uploadData.error ?? "Gagal mengunggah foto.");
         finalPhotoUrl = uploadData.url;
       }
@@ -99,7 +105,7 @@ export default function MemberForm({ member, allMembers, onSaved, onCancel }: Me
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error ?? "Gagal menyimpan.");
 
       onSaved(data.member);

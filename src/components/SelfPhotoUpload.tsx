@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { photoSrc } from "@/lib/photo";
+import { photoSrc, MAX_PHOTO_BYTES, MAX_PHOTO_LABEL, safeJson } from "@/lib/photo";
 
 function initials(name: string) {
   return name
@@ -35,6 +35,10 @@ export default function SelfPhotoUpload({
       setError("Format foto harus JPG atau PNG.");
       return;
     }
+    if (file.size > MAX_PHOTO_BYTES) {
+      setError(`Ukuran foto maksimal ${MAX_PHOTO_LABEL}.`);
+      return;
+    }
 
     setError(null);
     setPreview(URL.createObjectURL(file));
@@ -44,7 +48,7 @@ export default function SelfPhotoUpload({
       const form = new FormData();
       form.set("file", file);
       const res = await fetch("/api/profile/photo", { method: "POST", body: form });
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) throw new Error(data.error ?? "Gagal mengunggah foto.");
       router.refresh();
     } catch (err) {
