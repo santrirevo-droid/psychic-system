@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { get } from "@vercel/blob";
 import { getSessionMemberId } from "@/lib/auth";
 
 export async function GET(request: Request) {
@@ -22,18 +23,29 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "URL foto tidak valid." }, { status: 400 });
   }
 
-  const headers: HeadersInit = {};
+  // This store never exposes a static BLOB_READ_WRITE_TOKEN we could build a
+  // manual Authorization header from — only the SDK's own functions can
+  // authenticate (via ambient OIDC/BLOB_STORE_ID), so private blob URLs are
+  // read through get() rather than a plain fetch.
   if (targetUrl.hostname.endsWith(".blob.vercel-storage.com")) {
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    if (token) headers.Authorization = `Bearer ${token}`;
+    try {
+      const result = await get(targetUrl.toString(), { access: "private" });
+      if (!result || result.statusCode !== 200) {
+        return NextResponse.json({ error: "Foto tidak ditemukan." }, { status: 404 });
+      }
+      return new NextResponse(result.stream, {
+        headers: {
+          "Content-Type": result.blob.contentType,
+          "Cache-Control": "private, max-age=3600",
+        },
+      });
+    } catch {
+      return NextResponse.json({ error: "Foto tidak ditemukan." }, { status: 404 });
+    }
   }
 
-  const upstream = await fetch(targetUrl, { headers });
+  const upstream = await fetch(targetUrl);
   if (!upstream.ok || !upstream.body) {
-    const blobKeys = Object.keys(process.env).filter((k) => k.toUpperCase().includes("BLOB"));
-    console.error(
-      `[DEBUG /api/photo] upstream=${upstream.status} hasToken=${!!headers.Authorization} host=${targetUrl.hostname} blobEnvKeys=${JSON.stringify(blobKeys)}`
-    );
     return NextResponse.json({ error: "Foto tidak ditemukan." }, { status: 404 });
   }
 
