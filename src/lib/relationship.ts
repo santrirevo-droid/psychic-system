@@ -93,7 +93,10 @@ function termForPath(up: number, down: number, target: Member): RelationTerm {
     return target.gender === "L" ? "Kakek" : "Nenek";
   }
 
-  return "Keponakan";
+  const diff = down - up;
+  if (diff === 1) return "Keponakan";
+  if (diff === 2) return "Cucu";
+  return "Cicit";
 }
 
 export function getRelationTerm(
@@ -131,7 +134,8 @@ export function getRelationTerm(
     if (diff === -1) return target.gender === "L" ? "Om" : "Tante";
     if (diff === 0) return "Kakak/Adik";
     if (diff === 1) return "Keponakan";
-    return "Cucu";
+    if (diff === 2) return "Cucu";
+    return "Cicit";
   }
 
   let term = termForPath(path.up, path.down, target);
