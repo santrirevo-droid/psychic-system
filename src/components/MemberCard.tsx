@@ -22,13 +22,21 @@ function initials(name: string) {
     .join("");
 }
 
-export default function MemberCard({ data }: { data: MemberCardData }) {
-  const { name, birth_year, birth_month, city, photo_url, term, isViewer } = data;
+export default function MemberCard({
+  data,
+  onSelect,
+}: {
+  data: MemberCardData;
+  onSelect?: (id: string) => void;
+}) {
+  const { id, name, birth_year, birth_month, city, photo_url, term, isViewer } = data;
   const birth = formatBirth(birth_year, birth_month);
 
   return (
-    <div
-      className={`group relative flex flex-col items-center rounded-2xl border bg-card p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
+    <button
+      type="button"
+      onClick={() => onSelect?.(id)}
+      className={`group relative flex w-full flex-col items-center rounded-2xl border bg-card p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
         isViewer
           ? "border-accent ring-2 ring-accent/40"
           : "border-card-border"
@@ -66,6 +74,6 @@ export default function MemberCard({ data }: { data: MemberCardData }) {
         {birth && <span>Lahir {birth}</span>}
         {city && <span>{city}</span>}
       </div>
-    </div>
+    </button>
   );
 }

@@ -9,7 +9,13 @@ export type GenerationGroup = {
   members: MemberCardData[];
 };
 
-export default function FamilyTree({ groups }: { groups: GenerationGroup[] }) {
+export default function FamilyTree({
+  groups,
+  onSelect,
+}: {
+  groups: GenerationGroup[];
+  onSelect?: (id: string) => void;
+}) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -59,7 +65,7 @@ export default function FamilyTree({ groups }: { groups: GenerationGroup[] }) {
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {group.members.map((m) => (
-              <MemberCard key={m.id} data={m} />
+              <MemberCard key={m.id} data={m} onSelect={onSelect} />
             ))}
           </div>
         </section>

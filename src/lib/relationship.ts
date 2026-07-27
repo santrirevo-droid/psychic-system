@@ -134,6 +134,42 @@ export function getRelationTerm(
   return term;
 }
 
+type FamilyLike = { id: string; parent_id: string | null; spouse_id: string | null };
+
+export type FamilyCircle<T> = {
+  parents: T[];
+  siblings: T[];
+  spouse: T | null;
+  children: T[];
+};
+
+/**
+ * A person's immediate family for the "click to explore" panel: parents
+ * (the recorded parent_id plus that parent's spouse, since a child only
+ * ever records one side), siblings (anyone else recorded under either of
+ * those two parents), spouse, and children (recorded under this person or
+ * their spouse). Generic over Member/TreeMember since both shapes work.
+ */
+export function getFamilyCircle<T extends FamilyLike>(member: T, allMembers: T[]): FamilyCircle<T> {
+  const byId = new Map(allMembers.map((m) => [m.id, m]));
+
+  const parent = member.parent_id ? (byId.get(member.parent_id) ?? null) : null;
+  const parentSpouse = parent?.spouse_id ? (byId.get(parent.spouse_id) ?? null) : null;
+  const parents = [parent, parentSpouse].filter((m): m is T => m !== null);
+
+  const coParentIds = new Set(parents.map((p) => p.id));
+  const siblings = allMembers.filter(
+    (m) => m.id !== member.id && m.parent_id && coParentIds.has(m.parent_id)
+  );
+
+  const spouse = member.spouse_id ? (byId.get(member.spouse_id) ?? null) : null;
+
+  const selfAndSpouseIds = new Set([member.id, ...(spouse ? [spouse.id] : [])]);
+  const children = allMembers.filter((m) => m.parent_id && selfAndSpouseIds.has(m.parent_id));
+
+  return { parents, siblings, spouse, children };
+}
+
 export function groupByGeneration(members: Member[]): Map<number, Member[]> {
   const groups = new Map<number, Member[]>();
   for (const m of members) {

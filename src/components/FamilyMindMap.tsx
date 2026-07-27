@@ -23,7 +23,13 @@ function initials(name: string) {
     .join("");
 }
 
-export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
+export default function FamilyMindMap({
+  members,
+  onSelect,
+}: {
+  members: TreeMember[];
+  onSelect?: (id: string) => void;
+}) {
   const [query, setQuery] = useState("");
   const [scale, setScale] = useState(1);
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
@@ -283,8 +289,10 @@ export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
 
             return (
               <foreignObject key={m.id} x={left} y={top} width={NODE_W} height={NODE_H}>
-                <div
-                  className={`flex h-full flex-col items-center justify-start rounded-xl border bg-card p-2 text-center shadow-sm transition-opacity ${
+                <button
+                  type="button"
+                  onClick={() => onSelect?.(m.id)}
+                  className={`flex h-full w-full flex-col items-center justify-start rounded-xl border bg-card p-2 text-center shadow-sm transition-opacity hover:border-primary ${
                     m.isViewer ? "border-accent ring-2 ring-accent/40" : "border-card-border"
                   } ${dimmed ? "opacity-25" : "opacity-100"}`}
                 >
@@ -309,7 +317,7 @@ export default function FamilyMindMap({ members }: { members: TreeMember[] }) {
                       {formatBirth(m.birth_year, m.birth_month)}
                     </span>
                   )}
-                </div>
+                </button>
               </foreignObject>
             );
           })}
