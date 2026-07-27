@@ -7,6 +7,7 @@ type MemberOption = {
   id: string;
   name: string;
   generation: number;
+  is_guest: boolean;
 };
 
 const GEN_LABEL: Record<number, string> = {
@@ -17,9 +18,13 @@ const GEN_LABEL: Record<number, string> = {
   5: "Generasi 5",
 };
 
+function defaultMemberId(members: MemberOption[]): string {
+  return members.find((m) => m.is_guest)?.id ?? members[0]?.id ?? "";
+}
+
 export default function LoginForm({ members }: { members: MemberOption[] }) {
   const router = useRouter();
-  const [memberId, setMemberId] = useState(members[0]?.id ?? "");
+  const [memberId, setMemberId] = useState(() => defaultMemberId(members));
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

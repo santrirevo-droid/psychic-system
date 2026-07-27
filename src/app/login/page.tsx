@@ -10,7 +10,7 @@ export default async function LoginPage() {
   const members = await getAllMembers();
   const options = members
     .filter((m) => m.pin_hash)
-    .map((m) => ({ id: m.id, name: m.name, generation: m.generation }));
+    .map((m) => ({ id: m.id, name: m.name, generation: m.generation, is_guest: m.is_guest }));
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
