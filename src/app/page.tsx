@@ -77,7 +77,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <FamilyView members={treeMembers} />
+      <FamilyView members={treeMembers} isGuestViewer={viewer.is_guest} />
     </main>
   );
 }

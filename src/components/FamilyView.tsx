@@ -5,7 +5,13 @@ import FamilyTree from "./FamilyTree";
 import PersonPanel from "./PersonPanel";
 import type { TreeMember } from "@/lib/tree-layout";
 
-export default function FamilyView({ members }: { members: TreeMember[] }) {
+export default function FamilyView({
+  members,
+  isGuestViewer,
+}: {
+  members: TreeMember[];
+  isGuestViewer: boolean;
+}) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>([]);
 
@@ -34,7 +40,7 @@ export default function FamilyView({ members }: { members: TreeMember[] }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <FamilyTree members={members} onSelect={selectMember} />
+      <FamilyTree members={members} isGuestViewer={isGuestViewer} onSelect={selectMember} />
 
       {selectedMember && (
         <PersonPanel
