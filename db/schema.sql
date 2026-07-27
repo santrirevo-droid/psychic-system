@@ -14,6 +14,7 @@ create table if not exists members (
   spouse_id uuid references members(id) on delete set null,
   pin_hash text,
   is_admin boolean not null default false,
+  is_guest boolean not null default false,
   created_at timestamptz not null default now()
 );
 

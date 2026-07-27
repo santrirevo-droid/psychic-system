@@ -8,7 +8,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 
 export async function POST(request: Request) {
   const member = await getCurrentMember();
-  if (!member) {
+  if (!member || member.is_guest) {
     return NextResponse.json({ error: "Tidak diizinkan." }, { status: 403 });
   }
 

@@ -32,6 +32,7 @@ export type Member = {
   spouse_id: string | null;
   pin_hash: string | null;
   is_admin: boolean;
+  is_guest: boolean;
   created_at: string;
 };
 

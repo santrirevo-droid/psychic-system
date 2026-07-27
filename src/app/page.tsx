@@ -13,9 +13,15 @@ export default async function Home() {
   const viewerId = await getSessionMemberId();
   if (!viewerId) redirect("/login");
 
-  const members = await getAllMembers();
-  const viewer = members.find((m) => m.id === viewerId);
+  const allMembers = await getAllMembers();
+  const viewer = allMembers.find((m) => m.id === viewerId);
   if (!viewer) redirect("/login");
+
+  // Guest accounts (e.g. a shared "Keluarga" login) can see every real member,
+  // but real members never see guest accounts cluttering their own tree.
+  const members = viewer.is_guest
+    ? allMembers.filter((m) => !m.is_guest || m.id === viewer.id)
+    : allMembers.filter((m) => !m.is_guest);
 
   const byGeneration = groupByGeneration(members);
   const groups: GenerationGroup[] = [...byGeneration.entries()].map(
@@ -54,7 +60,15 @@ export default async function Home() {
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
       <header className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
         <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <SelfPhotoUpload name={viewer.name} photoUrl={viewer.photo_url} />
+          {viewer.is_guest ? (
+            <div className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-card-border bg-accent-soft shadow-inner">
+              <div className="flex h-full w-full items-center justify-center font-[family-name:var(--font-display)] text-lg text-accent">
+                {viewer.name[0]?.toUpperCase()}
+              </div>
+            </div>
+          ) : (
+            <SelfPhotoUpload name={viewer.name} photoUrl={viewer.photo_url} />
+          )}
           <div>
             <p className="text-sm font-medium tracking-widest text-accent uppercase">
               Pohon Keluarga
@@ -63,7 +77,9 @@ export default async function Home() {
               Halo, {viewer.name}
             </h1>
             <p className="mt-2 text-muted">
-              Berikut keluarga besar Anda, lengkap dengan panggilannya.
+              {viewer.is_guest
+                ? "Mode tamu: Anda bisa melihat semua data, tanpa bisa mengedit."
+                : "Berikut keluarga besar Anda, lengkap dengan panggilannya."}
             </p>
           </div>
         </div>
